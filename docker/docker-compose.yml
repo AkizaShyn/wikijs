@@ -1,0 +1,31 @@
+version: "3"
+services:
+  db-wiki:
+    hostname: ct-db-wiki
+    container_name: ct-db-wiki
+    image: mariadb:10.6.14
+    restart: unless-stopped
+    volumes:
+      - db-wiki-data:/var/lib/mysql
+    networks:
+     - network-wiki
+  app-wiki:
+    hostname: ct-app-wiki
+    container_name: ct-app-wiki
+    image: ghcr.io/requarks/wiki:2
+    depends_on:
+      - db-wiki
+    environment:
+      DB_TYPE: mariadb
+      DB_HOST: ct-db-wiki
+      DB_PORT: 3306
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - network-wiki
+
+volumes:
+  db-wiki-data:
+networks:
+  network-wiki:
